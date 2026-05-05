@@ -20,3 +20,8 @@ To install the project, follow these steps:
    `npm install`
 4. Start the application:
    `npm start`
+
+## Github Repository
+
+### Main branch
+name : main
