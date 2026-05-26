@@ -1,0 +1,141 @@
+/*
+######################################
+# Définitions des variables de thème #
+######################################*/
+
+/* Valeurs par défaut (mode sombre) */
+:root {
+  --bg: #12161e;
+  --surface: rgba(255,255,255,0.06);
+  --surface-btn: rgba(255,255,255,0.12);
+  --text: #e1e7f5;
+  --text-muted: #9aa5b8;
+  --border: rgba(255,255,255,0.12);
+}
+
+/* Si l'OS est en sombre ET que l'utilisateur n'a pas forcé un thème */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161e;
+    --surface: rgba(255,255,255,0.06);
+    --surface-btn: rgba(12, 16, 31, 0.12);
+    --text: #e1e7f5;
+    --text-muted: #9aa5b8;
+    --border: rgba(255,255,255,0.12);
+  }
+}
+
+/* Si l'utilisateur a manuellement choisi le clair */
+:root[data-theme="light"] {
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --surface-btn: rgba(119, 124, 145, 0.12);
+  --text: #172033;
+  --text-muted: #4e5b72;
+  --border: #e1e7f5;
+}
+
+/* Couleurs statiques */
+:root {
+  --blue: #3658ff;
+  --black: #172033;
+  --white: #f4f6fb;
+}
+
+.nav .btn-login {
+  background: var(--blue);
+  color: var(--white);
+}
+
+
+/*
+##################################
+# Attribution des styles de page #
+##################################*/
+
+:root {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+
+.app {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 56px;
+}
+
+.header, .hero, .panel, .post-card {
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: 0 18px 50px rgba(28, 39, 68, 0.08);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  position: sticky;
+  top: 16px;
+  z-index: 10;
+  backdrop-filter: blur(14px);
+}
+
+.header h1, .hero h2, .create-post h2, .post-card h2 { margin: 0; }
+.eyebrow { margin: 0 0 6px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.12em; font-weight: 800; }
+.nav { display: flex; align-items: center; gap: 14px; }
+.nav a { color: var(--text); text-decoration: none; font-weight: 700; }
+.nav button, .filters button, form button, .post-actions button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: var(--surface-btn);
+  color: var(--white);
+  font-weight: 700;
+}
+
+.hero { margin: 28px 0; padding: 42px; background: linear-gradient(135deg, var(--surface), var(--bg)); }
+.hero h2 { max-width: 780px; font-size: clamp(2rem, 5vw, 4rem); line-height: 1; }
+.hero p:last-child { max-width: 620px; color: var(--text-muted); font-size: 1.1rem; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; margin-bottom: 22px; }
+.filters button { background: var(--surface-btn); color: var(--text); }
+.filters button.active { background: var(--blue); color: var(--white); }
+
+.posts-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.post-card { padding: 24px; }
+.post-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; }
+.post-card p { color: var(--text); line-height: 1.6; }
+.post-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.post-actions button { background: var(--surface-btn); color: var(--text); }
+.comments { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 12px; }
+.comments p { margin: 8px 0 0; font-size: 0.95rem; }
+
+.create-post { margin-top: 24px; padding: 24px; }
+form { display: grid; gap: 16px; margin-top: 16px; }
+label { display: grid; gap: 8px; color: var(--text-muted); font-weight: 700; }
+input, select, textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 13px 14px;
+  background: var(--surface-btn);
+  color: var(--text);
+}
+textarea { resize: vertical; }
+form button { justify-self: start; background: var(--blue); }
+
+@media (max-width: 760px) {
+  .header { align-items: flex-start; flex-direction: column; }
+  .nav { width: 100%; justify-content: space-between; }
+  .hero { padding: 28px; }
+  .posts-list { grid-template-columns: 1fr; }
+}
