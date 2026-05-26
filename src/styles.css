@@ -1,9 +1,10 @@
 /*
 ######################################
 # Définitions des variables de thème #
-######################################*/
+######################################
+*/
 
-/* Valeurs par défaut (mode sombre) */
+/* sombre par défaut */
 :root {
   --bg: #12161e;
   --surface: rgba(255,255,255,0.06);
@@ -13,19 +14,7 @@
   --border: rgba(255,255,255,0.12);
 }
 
-/* Si l'OS est en sombre ET que l'utilisateur n'a pas forcé un thème */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #12161e;
-    --surface: rgba(255,255,255,0.06);
-    --surface-btn: rgba(12, 16, 31, 0.12);
-    --text: #e1e7f5;
-    --text-muted: #9aa5b8;
-    --border: rgba(255,255,255,0.12);
-  }
-}
-
-/* Si l'utilisateur a manuellement choisi le clair */
+/* clair uniquement si explicitement activé */
 :root[data-theme="light"] {
   --bg: #f4f6fb;
   --surface: #ffffff;

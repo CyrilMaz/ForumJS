@@ -131,7 +131,7 @@ function CreatePostForm({ onCreatePost }) {
 export default function App() {
   const [posts, setPosts] = useState(initialPosts);
   const [activeCategory, setActiveCategory] = useState('Tous');
-  const [lightMode, setLightMode] = useState(false);
+  const [lightMode, setLightMode] = useState(() => window.matchMedia('(prefers-color-scheme: light)').matches)
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', lightMode ? 'light' : 'dark');
