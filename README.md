@@ -1,15 +1,18 @@
-# FORUM-JS
+# ForumJS - Front React + Vite
 
-## Credits
+Interface front d'un forum réalisée avec React et Vite.
 
-### Context :
-This project was created by the students of Ynov Campus in Montpellier, France. The project is a forum application built using JavaScript.
+## Installation
 
-### Developers
-- [@CyrilMaz] : Cyril MAZAURIC - cyril.mazauric@ynov.com
-- [@Ygn1te] : Nathan GUEROULT - nathan.gueroult34@ynov.com
+```bash
+npm install
+npm run dev
+```
 
+Puis ouvrir l'URL affichée par Vite, généralement `http://localhost:5172`.
+### Comment changer de port :
 
+<<<<<<< HEAD
 ## Installation in case of local use, but it should be on Docker so it should not be necessary to install it locally.
 To install the project, follow these steps:
 1. Clone the repository:
@@ -25,3 +28,35 @@ To install the project, follow these steps:
 
 ### Main branch
 name : main
+=======
+```bash
+npm run dev -- --port 3000
+```
+
+## Scripts
+
+```bash
+npm run dev      # lancer le serveur de développement
+npm run build    # générer la version production
+npm run preview  # prévisualiser le build
+```
+
+## Structure
+
+```txt
+index.html
+src/
+  main.jsx
+  App.jsx
+  styles.css
+vite.config.js
+```
+
+## À connecter ensuite au backend
+
+- Authentification : inscription, connexion, session cookie
+- Posts : création, modification, suppression
+- Commentaires
+- Likes / dislikes
+- Filtres par catégories, posts de l'utilisateur, posts aimés
+>>>>>>> origin/Auth
