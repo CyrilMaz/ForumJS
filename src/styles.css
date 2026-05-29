@@ -31,16 +31,11 @@
   --white: #f4f6fb;
 }
 
-.nav .btn-login {
-  background: var(--blue);
-  color: var(--white);
-}
-
-
 /*
 ##################################
 # Attribution des styles de page #
-##################################*/
+##################################
+*/
 
 :root {
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -48,10 +43,21 @@
   background: var(--bg);
 }
 
-* { box-sizing: border-box; }
-body { margin: 0; }
-button, input, select, textarea { font: inherit; }
-button { cursor: pointer; }
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
 
 .app {
   width: min(1120px, calc(100% - 32px));
@@ -78,10 +84,31 @@ button { cursor: pointer; }
   backdrop-filter: blur(14px);
 }
 
-.header h1, .hero h2, .create-post h2, .post-card h2 { margin: 0; }
-.eyebrow { margin: 0 0 6px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.12em; font-weight: 800; }
-.nav { display: flex; align-items: center; gap: 14px; }
-.nav a { color: var(--text); text-decoration: none; font-weight: 700; }
+.header h1, .hero h2, .create-post h2, .post-card h2 {
+  margin: 0;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nav a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 700;
+}
+
 .nav button, .filters button, form button, .post-actions button {
   border: 0;
   border-radius: 999px;
@@ -91,26 +118,113 @@ button { cursor: pointer; }
   font-weight: 700;
 }
 
-.hero { margin: 28px 0; padding: 42px; background: linear-gradient(135deg, var(--surface), var(--bg)); }
-.hero h2 { max-width: 780px; font-size: clamp(2rem, 5vw, 4rem); line-height: 1; }
-.hero p:last-child { max-width: 620px; color: var(--text-muted); font-size: 1.1rem; }
+.nav .btn-login {
+  background: var(--blue);
+  color: var(--white);
+}
 
-.filters { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; margin-bottom: 22px; }
-.filters button { background: var(--surface-btn); color: var(--text); }
-.filters button.active { background: var(--blue); color: var(--white); }
+.hero {
+  margin: 28px 0;
+  padding: 42px;
+  background: linear-gradient(135deg, var(--surface), var(--bg));
+}
 
-.posts-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-.post-card { padding: 24px; }
-.post-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; }
-.post-card p { color: var(--text); line-height: 1.6; }
-.post-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
-.post-actions button { background: var(--surface-btn); color: var(--text); }
-.comments { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 12px; }
-.comments p { margin: 8px 0 0; font-size: 0.95rem; }
+.hero h2 {
+  max-width: 780px;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1;
+}
 
-.create-post { margin-top: 24px; padding: 24px; }
-form { display: grid; gap: 16px; margin-top: 16px; }
-label { display: grid; gap: 8px; color: var(--text-muted); font-weight: 700; }
+.hero p:last-child {
+  max-width: 620px;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px;
+  margin-bottom: 22px;
+}
+
+.filters button {
+  background: var(--surface-btn);
+  color: var(--text);
+}
+
+.filters button.active {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.posts-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.post-card {
+  padding: 24px;
+}
+
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.post-card p {
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.post-actions button {
+  background: var(--surface-btn);
+  color: var(--text);
+}
+
+.comments {
+  border-top: 1px solid var(--border);
+  margin-top: 18px;
+  padding-top: 12px;
+}
+
+.comments p {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+}
+
+.create-post {
+  margin-top: 24px;
+  padding: 24px;
+}
+
+form {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
 input, select, textarea {
   width: 100%;
   border: 1px solid var(--border);
@@ -119,12 +233,32 @@ input, select, textarea {
   background: var(--surface-btn);
   color: var(--text);
 }
-textarea { resize: vertical; }
-form button { justify-self: start; background: var(--blue); }
+
+textarea {
+  resize: vertical;
+}
+
+form button {
+  justify-self: start;
+  background: var(--blue);
+}
 
 @media (max-width: 760px) {
-  .header { align-items: flex-start; flex-direction: column; }
-  .nav { width: 100%; justify-content: space-between; }
-  .hero { padding: 28px; }
-  .posts-list { grid-template-columns: 1fr; }
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .hero {
+    padding: 28px;
+  }
+
+  .posts-list {
+    grid-template-columns: 1fr;
+  }
 }

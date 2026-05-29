@@ -121,7 +121,7 @@ function CreatePostForm({ onCreatePost }) {
         </label>
         <label>
           Catégorie
-          <select name="category" value={form.category} onChange={updateField}>
+          <select className="StringSelectMenu" name="category" value={form.category} onChange={updateField}>
             {categories.filter((category) => category !== 'Tous').map((category) => (
               <option key={category}>{category}</option>
             ))}
