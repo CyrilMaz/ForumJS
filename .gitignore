@@ -1,4 +1,7 @@
 .env
 package-lock.json
 node_modules/
+<<<<<<< HEAD
 Sujet_Projet_Forum.pdf
+=======
+>>>>>>> 9d39f30f47df4a434d560465a35713a60cf2757c
