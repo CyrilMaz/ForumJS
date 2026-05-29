@@ -1,29 +1,7 @@
 {
-<<<<<<< HEAD
   "name": "forumjs",
   "version": "1.0.0",
-  "description": "This project was created by the students of Ynov Campus in Montpellier, France. The project is a forum application built using JavaScript.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CyrilMaz/ForumJS.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/CyrilMaz/ForumJS/issues"
-  },
-  "homepage": "https://github.com/CyrilMaz/ForumJS#readme"
-}
-=======
-  "name": "FORUMJS",
   "private": true,
-  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -39,4 +17,3 @@
     "vite": "^7.3.1"
   }
 }
->>>>>>> origin/Auth
