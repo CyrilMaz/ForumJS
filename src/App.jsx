@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { LoginModal } from './components/LoginModal/LoginModal';
+
 
 const initialPosts = [
   {
@@ -27,7 +29,7 @@ const initialPosts = [
 
 const categories = ['Tous', 'Général', 'Développement', 'Docker', 'SQLite'];
 
-function Header({ lightMode, onTogglelightMode }) {
+function Header({ lightMode, onTogglelightMode, onOpenLogin}) {
   return (
     <header className="header">
       <div>
@@ -37,12 +39,19 @@ function Header({ lightMode, onTogglelightMode }) {
       <nav className="nav">
         <a href="#posts">Posts</a>
         <a href="#create">Créer</a>
-        <button type="button" 
+        <button 
+          type="button" 
           onClick={onTogglelightMode}
           title={lightMode ? 'Passer en mode sombre' : 'Passer en mode clair'}>
           {lightMode ? '🌙' : '☀️︎'}
         </button>
-        <button type ="button" className="btn-login">se connecter</button>
+        <button 
+          type="button" 
+          className="btn-login"
+          onClick={onOpenLogin}
+        >
+          se connecter
+        </button>
       </nav>
     </header>
   );
@@ -132,6 +141,8 @@ export default function App() {
   const [posts, setPosts] = useState(initialPosts);
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [lightMode, setLightMode] = useState(() => window.matchMedia('(prefers-color-scheme: light)').matches)
+  const [showLogin, setShowLogin] = useState(false);
+
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', lightMode ? 'light' : 'dark');
@@ -167,6 +178,7 @@ export default function App() {
       <Header
         lightMode={lightMode}
         onTogglelightMode={() => setLightMode(!lightMode)}
+        onOpenLogin={() => setShowLogin(true)}
       />
       <section className="hero">
         <p className="eyebrow">Projet Ynov</p>
@@ -180,6 +192,7 @@ export default function App() {
         ))}
       </section>
       <CreatePostForm onCreatePost={handleCreatePost} />
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </main>
   );
 }
