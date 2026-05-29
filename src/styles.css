@@ -243,6 +243,53 @@ form button {
   background: var(--blue);
 }
 
+.custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.selected {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 13px 14px;
+  background: var(--surface-btn);
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.options {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+}
+
+.options.open { display: block; }
+
+.options li {
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.options li:hover {
+  background: var(--surface-btn);
+}
+
 @media (max-width: 760px) {
   .header {
     align-items: flex-start;

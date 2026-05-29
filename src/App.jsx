@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { LoginModal } from './components/LoginModal/LoginModal';
 
 
@@ -97,6 +97,39 @@ function PostCard({ post, onVote }) {
   );
 }
 
+function CustomSelect({ name, value, onChange, options }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  function handleSelect(option) {
+    onChange({ target: { name, value: option } });
+    setOpen(false);
+  }
+
+  return (
+    <div className="custom-select" ref={ref}>
+      <div className="selected" onClick={() => setOpen((o) => !o)}>
+        {value}
+      </div>
+      <ul className={`options${open ? ' open' : ''}`}>
+        {options.map((option) => (
+          <li key={option} onClick={() => handleSelect(option)}>
+            {option}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function CreatePostForm({ onCreatePost }) {
   const [form, setForm] = useState({ title: '', category: 'Général', content: '' });
 
@@ -121,11 +154,12 @@ function CreatePostForm({ onCreatePost }) {
         </label>
         <label>
           Catégorie
-          <select className="StringSelectMenu" name="category" value={form.category} onChange={updateField}>
-            {categories.filter((category) => category !== 'Tous').map((category) => (
-              <option key={category}>{category}</option>
-            ))}
-          </select>
+          <CustomSelect
+            name="category"
+            value={form.category}
+            onChange={updateField}
+            options={categories.filter((c) => c !== 'Tous')}
+          />
         </label>
         <label>
           Message
@@ -174,7 +208,7 @@ export default function App() {
   }
 
   return (
-    <main className={lightMode ? 'app light' : 'app'}>
+    <main className={lightMode ? 'app light' : 'app dark'}>
       <Header
         lightMode={lightMode}
         onTogglelightMode={() => setLightMode(!lightMode)}
