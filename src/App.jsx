@@ -1,10 +1,30 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LoginModal } from './components/LoginModal/LoginModal';
-import { fetchPosts, createPost, votePost } from './api';
 
-const categories = ['Tous', 'Général', 'Développement', 'Docker', 'SQLite'];
+const INITIAL_POSTS = [
+  {
+    id: 1,
+    title: 'Bienvenue sur ForumJS',
+    author: 'Cyril',
+    category: 'Général',
+    content: 'Présentez-vous, posez vos questions et partagez vos idées autour du projet.',
+    likes: 12,
+    dislikes: 1,
+    comments: [{ id: 1, author: 'Nathan', content: 'La structure React/Vite est prête.' }],
+  },
+  {
+    id: 2,
+    title: 'Comment organiser les catégories ?',
+    author: 'Nathan',
+    category: 'Développement',
+    content: 'On peut utiliser les catégories comme des sous-forums : Go, JS, Docker, SQLite...',
+    likes: 8,
+    dislikes: 0,
+    comments: [],
+  },
+];
 
-function Header({ lightMode, onTogglelightMode, onOpenLogin}) {
+function Header({ lightMode, onTogglelightMode, onOpenLogin }) {
   return (
     <header className="header">
       <div>
@@ -14,17 +34,14 @@ function Header({ lightMode, onTogglelightMode, onOpenLogin}) {
       <nav className="nav">
         <a href="#posts">Posts</a>
         <a href="#create">Créer</a>
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={onTogglelightMode}
-          title={lightMode ? 'Passer en mode sombre' : 'Passer en mode clair'}>
+          title={lightMode ? 'Passer en mode sombre' : 'Passer en mode clair'}
+        >
           {lightMode ? '🌙' : '☀️︎'}
         </button>
-        <button 
-          type="button" 
-          className="btn-login"
-          onClick={onOpenLogin}
-        >
+        <button type="button" className="btn-login" onClick={onOpenLogin}>
           se connecter
         </button>
       </nav>
@@ -32,26 +49,17 @@ function Header({ lightMode, onTogglelightMode, onOpenLogin}) {
   );
 }
 
-function Filters({ activeCategory, onChangeCategory }) {
-  return (
-    <section className="panel filters" aria-label="Filtres des posts">
-      {categories.map((category) => (
-        <button
-          key={category}
-          type="button"
-          className={activeCategory === category ? 'active' : ''}
-          onClick={() => onChangeCategory(category)}
-        >
-          {category}
-        </button>
-      ))}
-    </section>
-  );
-}
+function PostCard({ post, onVote, isNew }) {
+  const [bumped, setBumped] = useState(null);
 
-function PostCard({ post, onVote }) {
+  function handleVote(field) {
+    setBumped(field);
+    onVote(post.id, field);
+    setTimeout(() => setBumped(null), 300);
+  }
+
   return (
-    <article className="post-card">
+    <article className={`post-card${isNew ? ' post-card--new' : ''}`}>
       <div className="post-meta">
         <span>{post.category}</span>
         <span>par {post.author}</span>
@@ -59,64 +67,47 @@ function PostCard({ post, onVote }) {
       <h2>{post.title}</h2>
       <p>{post.content}</p>
       <div className="post-actions">
-        <button type="button" onClick={() => onVote(post.id, 'likes')}>👍 {post.likes}</button>
-        <button type="button" onClick={() => onVote(post.id, 'dislikes')}>👎 {post.dislikes}</button>
+        <button
+          type="button"
+          className={bumped === 'likes' ? 'bumped' : ''}
+          onClick={() => handleVote('likes')}
+        >
+          👍 {post.likes}
+        </button>
+        <button
+          type="button"
+          className={bumped === 'dislikes' ? 'bumped' : ''}
+          onClick={() => handleVote('dislikes')}
+        >
+          👎 {post.dislikes}
+        </button>
         <span>{post.comments.length} commentaire(s)</span>
       </div>
-      <div className="comments">
-        {post.comments.map((comment) => (
-          <p key={comment.id}><strong>{comment.author}</strong> — {comment.content}</p>
-        ))}
-      </div>
+      {post.comments.length > 0 && (
+        <div className="comments">
+          {post.comments.map((comment) => (
+            <p key={comment.id}>
+              <strong>{comment.author}</strong> — {comment.content}
+            </p>
+          ))}
+        </div>
+      )}
     </article>
   );
 }
 
-function CustomSelect({ name, value, onChange, options }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  function handleSelect(option) {
-    onChange({ target: { name, value: option } });
-    setOpen(false);
-  }
-
-  return (
-    <div className="custom-select" ref={ref}>
-      <div className="selected" onClick={() => setOpen((o) => !o)}>
-        {value}
-      </div>
-      <ul className={`options${open ? ' open' : ''}`}>
-        {options.map((option) => (
-          <li key={option} onClick={() => handleSelect(option)}>
-            {option}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 function CreatePostForm({ onCreatePost }) {
-  const [form, setForm] = useState({ title: '', category: 'Général', content: '' });
+  const [form, setForm] = useState({ title: '', content: '' });
 
-  function updateField(event) {
-    setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+  function updateField(e) {
+    setForm((cur) => ({ ...cur, [e.target.name]: e.target.value }));
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  function handleSubmit(e) {
+    e.preventDefault();
     if (!form.title.trim() || !form.content.trim()) return;
     onCreatePost(form);
-    setForm({ title: '', category: 'Général', content: '' });
+    setForm({ title: '', content: '' });
   }
 
   return (
@@ -126,15 +117,6 @@ function CreatePostForm({ onCreatePost }) {
         <label>
           Titre
           <input name="title" value={form.title} onChange={updateField} placeholder="Sujet du post" />
-        </label>
-        <label>
-          Catégorie
-          <CustomSelect
-            name="category"
-            value={form.category}
-            onChange={updateField}
-            options={categories.filter((c) => c !== 'Tous')}
-          />
         </label>
         <label>
           Message
@@ -147,57 +129,62 @@ function CreatePostForm({ onCreatePost }) {
 }
 
 export default function App() {
-  const [posts, setPosts] = useState([]);
-  const [activeCategory, setActiveCategory] = useState('Tous');
-  const [lightMode, setLightMode] = useState(() => window.matchMedia('(prefers-color-scheme: light)').matches)
+  const [posts, setPosts] = useState(INITIAL_POSTS);
+  const [newIds, setNewIds] = useState(new Set());
+  const [lightMode, setLightMode] = useState(
+    () => window.matchMedia('(prefers-color-scheme: light)').matches
+  );
   const [showLogin, setShowLogin] = useState(false);
-
-  useEffect(() => {
-    fetchPosts().then(setPosts);
-  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', lightMode ? 'light' : 'dark');
   }, [lightMode]);
 
-  const visiblePosts = useMemo(() => {
-    if (activeCategory === 'Tous') return posts;
-    return posts.filter((post) => post.category === activeCategory);
-  }, [posts, activeCategory]);
-
-  async function handleVote(postId, field) {
-    await votePost(postId, field);
-    setPosts((current) => current.map((post) =>
-      post.id === postId ? { ...post, [field]: post[field] + 1 } : post
-    ));
+  function handleVote(postId, field) {
+    setPosts((cur) =>
+      cur.map((post) =>
+        post.id === postId ? { ...post, [field]: post[field] + 1 } : post
+      )
+    );
   }
 
-  async function handleCreatePost(form) {
-    const newPost = await createPost({
+  function handleCreatePost(form) {
+    const newPost = {
+      id: Date.now(),
       title: form.title.trim(),
       author: 'Utilisateur',
-      category: form.category,
+      category: 'Général',
       content: form.content.trim(),
-    });
-    setPosts((current) => [newPost, ...current]);
+      likes: 0,
+      dislikes: 0,
+      comments: [],
+    };
+    setPosts((cur) => [newPost, ...cur]);
+    setNewIds((cur) => new Set(cur).add(newPost.id));
+    setTimeout(() => {
+      setNewIds((cur) => {
+        const next = new Set(cur);
+        next.delete(newPost.id);
+        return next;
+      });
+    }, 600);
   }
 
   return (
     <main className={lightMode ? 'app light' : 'app dark'}>
       <Header
         lightMode={lightMode}
-        onTogglelightMode={() => setLightMode(!lightMode)}
+        onTogglelightMode={() => setLightMode((m) => !m)}
         onOpenLogin={() => setShowLogin(true)}
       />
       <section className="hero">
         <p className="eyebrow">Projet Ynov</p>
-        <h2>Un forum clair, responsive et prêt à connecter à ton backend.</h2>
-        <p>Cette interface gère déjà l’affichage, les filtres, les votes locaux et la création de posts côté front.</p>
+        <h2>Forum de puants en développement</h2>
+        <p>Affichage, votes et création de posts — 100 % local.</p>
       </section>
-      <Filters activeCategory={activeCategory} onChangeCategory={setActiveCategory} />
       <section id="posts" className="posts-list">
-        {visiblePosts.map((post) => (
-          <PostCard key={post.id} post={post} onVote={handleVote} />
+        {posts.map((post) => (
+          <PostCard key={post.id} post={post} onVote={handleVote} isNew={newIds.has(post.id)} />
         ))}
       </section>
       <CreatePostForm onCreatePost={handleCreatePost} />

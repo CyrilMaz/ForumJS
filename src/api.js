@@ -1,34 +1,9 @@
 // Point de connexion à l'API — remplacer les implémentations par des fetch() quand le backend est prêt.
-// const API_URL = 'http://localhost:3000/api'
-
-const mockPosts = [
-  {
-    id: 1,
-    title: 'Bienvenue sur ForumJS',
-    author: 'Cyril',
-    category: 'Général',
-    content: 'Présentez-vous, posez vos questions et partagez vos idées autour du projet.',
-    likes: 12,
-    dislikes: 1,
-    comments: [
-      { id: 1, author: 'Nathan', content: 'La structure React/Vite est prête.' },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Comment organiser les catégories ?',
-    author: 'Nathan',
-    category: 'Développement',
-    content: 'On peut utiliser les catégories comme des sous-forums : Go, JS, Docker, SQLite...',
-    likes: 8,
-    dislikes: 0,
-    comments: [],
-  },
-]
+const API_URL = 'http://localhost:5173/api'
 
 export async function fetchPosts() {
-  // return fetch(`${API_URL}/posts`).then(r => r.json())
-  return mockPosts
+  return fetch(`${API_URL}/posts`).then(r => r.json())
+  
 }
 
 export async function createPost(form) {
