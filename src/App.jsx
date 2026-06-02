@@ -1,31 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { LoginModal } from './components/LoginModal/LoginModal';
-
-
-const initialPosts = [
-  {
-    id: 1,
-    title: 'Bienvenue sur ForumJS',
-    author: 'Cyril',
-    category: 'Général',
-    content: 'Présentez-vous, posez vos questions et partagez vos idées autour du projet.',
-    likes: 12,
-    dislikes: 1,
-    comments: [
-      { id: 1, author: 'Nathan', content: 'La structure React/Vite est prête.' },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Comment organiser les catégories ?',
-    author: 'Nathan',
-    category: 'Développement',
-    content: 'On peut utiliser les catégories comme des sous-forums : Go, JS, Docker, SQLite...',
-    likes: 8,
-    dislikes: 0,
-    comments: [],
-  },
-];
+import { fetchPosts, createPost, votePost } from './api';
 
 const categories = ['Tous', 'Général', 'Développement', 'Docker', 'SQLite'];
 
@@ -172,11 +147,14 @@ function CreatePostForm({ onCreatePost }) {
 }
 
 export default function App() {
-  const [posts, setPosts] = useState(initialPosts);
+  const [posts, setPosts] = useState([]);
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [lightMode, setLightMode] = useState(() => window.matchMedia('(prefers-color-scheme: light)').matches)
   const [showLogin, setShowLogin] = useState(false);
 
+  useEffect(() => {
+    fetchPosts().then(setPosts);
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', lightMode ? 'light' : 'dark');
@@ -187,24 +165,21 @@ export default function App() {
     return posts.filter((post) => post.category === activeCategory);
   }, [posts, activeCategory]);
 
-  function handleVote(postId, field) {
-    setPosts((currentPosts) => currentPosts.map((post) => (
+  async function handleVote(postId, field) {
+    await votePost(postId, field);
+    setPosts((current) => current.map((post) =>
       post.id === postId ? { ...post, [field]: post[field] + 1 } : post
-    )));
+    ));
   }
 
-  function handleCreatePost(form) {
-    const newPost = {
-      id: Date.now(),
+  async function handleCreatePost(form) {
+    const newPost = await createPost({
       title: form.title.trim(),
       author: 'Utilisateur',
       category: form.category,
       content: form.content.trim(),
-      likes: 0,
-      dislikes: 0,
-      comments: [],
-    };
-    setPosts((currentPosts) => [newPost, ...currentPosts]);
+    });
+    setPosts((current) => [newPost, ...current]);
   }
 
   return (

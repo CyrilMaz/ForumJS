@@ -12,7 +12,6 @@ npm run dev
 Puis ouvrir l'URL affichée par Vite, généralement `http://localhost:5172`.
 ### Comment changer de port :
 
-<<<<<<< HEAD
 ## Installation in case of local use, but it should be on Docker so it should not be necessary to install it locally.
 To install the project, follow these steps:
 1. Clone the repository:
@@ -28,7 +27,6 @@ To install the project, follow these steps:
 
 ### Main branch
 name : main
-=======
 ```bash
 npm run dev -- --port 3000
 ```
@@ -59,4 +57,3 @@ vite.config.js
 - Commentaires
 - Likes / dislikes
 - Filtres par catégories, posts de l'utilisateur, posts aimés
->>>>>>> origin/Auth
