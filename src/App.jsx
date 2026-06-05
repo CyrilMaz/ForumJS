@@ -1,28 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LoginModal } from './components/LoginModal/LoginModal';
-
-const INITIAL_POSTS = [
-  {
-    id: 1,
-    title: 'Bienvenue sur ForumJS',
-    author: 'Cyril',
-    category: 'Général',
-    content: 'Présentez-vous, posez vos questions et partagez vos idées autour du projet.',
-    likes: 12,
-    dislikes: 1,
-    comments: [{ id: 1, author: 'Nathan', content: 'La structure React/Vite est prête.' }],
-  },
-  {
-    id: 2,
-    title: 'Comment organiser les catégories ?',
-    author: 'Nathan',
-    category: 'Développement',
-    content: 'On peut utiliser les catégories comme des sous-forums : Go, JS, Docker, SQLite...',
-    likes: 8,
-    dislikes: 0,
-    comments: [],
-  },
-];
+import { fetchPosts, createPost, votePost } from './api';
 
 function Header({ lightMode, onTogglelightMode, onOpenLogin }) {
   return (
@@ -129,7 +107,7 @@ function CreatePostForm({ onCreatePost }) {
 }
 
 export default function App() {
-  const [posts, setPosts] = useState(INITIAL_POSTS);
+  const [posts, setPosts] = useState([]);
   const [newIds, setNewIds] = useState(new Set());
   const [lightMode, setLightMode] = useState(
     () => window.matchMedia('(prefers-color-scheme: light)').matches
@@ -137,28 +115,22 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
+    fetchPosts().then(setPosts);
+  }, []);
+
+  useEffect(() => {
     document.documentElement.setAttribute('data-theme', lightMode ? 'light' : 'dark');
   }, [lightMode]);
 
-  function handleVote(postId, field) {
+  async function handleVote(postId, field) {
     setPosts((cur) =>
-      cur.map((post) =>
-        post.id === postId ? { ...post, [field]: post[field] + 1 } : post
-      )
+      cur.map((p) => (p.id === postId ? { ...p, [field]: p[field] + 1 } : p))
     );
+    await votePost(postId, field);
   }
 
-  function handleCreatePost(form) {
-    const newPost = {
-      id: Date.now(),
-      title: form.title.trim(),
-      author: 'Utilisateur',
-      category: 'Général',
-      content: form.content.trim(),
-      likes: 0,
-      dislikes: 0,
-      comments: [],
-    };
+  async function handleCreatePost(form) {
+    const newPost = await createPost(form);
     setPosts((cur) => [newPost, ...cur]);
     setNewIds((cur) => new Set(cur).add(newPost.id));
     setTimeout(() => {
