@@ -10,7 +10,14 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-    const posts
+    const { title, content } = req.body
+
+    const result = db.prepare(`
+        INSERT INTO Posts ( user_id, category_id, title, content)
+        VALUES (1, 1, ?, ?) 
+        `).run(title, content) // PLACEHOLDER : Values ( 1, 1, ?, ?) futurement (?, ?, ?, ?) avec l'auth fonctionnelle
+
+        res.json({ id: result.lastInsertRowid, title, content, likes: 0, dislikes: 0, comments: [] })
 })
 
 export default router;
