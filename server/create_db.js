@@ -7,19 +7,20 @@ function startdb() {
         CREATE IF NOT EXISTS TABLE Users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             mail NVARCHAR(255) NOT NULL UNIQUE,
-            username VARVHAR(100) NOT NULL,
+            username VARCHAR(100) NOT NULL,
             password TEXT NOT NULL
         )
 
         CREATE IF NOT EXISTS TABLE Categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name VARC6HAR(100) NOT NULL
+            name VARCHAR(100) NOT NULL
         )
 
         CREATE IF NOT EXISTS TABLE Posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             category_id INTEGER NOT NULL,
+            title VARCHAR(100) NOT NULL,
             content TEXT NOT NULL,
             date TEXT DEFAULT datetime('now') NOT NULL,
             FOREIGN KEY(user_id) REFERENCES Users(id)
