@@ -1,4 +1,4 @@
-import express,  from 'express';
+import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 const db = require('better-sqlite3')('../create_db.db');
