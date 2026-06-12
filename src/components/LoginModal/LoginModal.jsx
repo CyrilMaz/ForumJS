@@ -9,7 +9,7 @@ export function LoginModal({ onClose }) {
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-                <h2>Connexion</h2>
+                <h2 className="ConnectModal-title">Connectez vous pour accéder à toutes nos fonctionnalités</h2>
                 <form>
                     <label>
                         Email
