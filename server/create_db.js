@@ -6,7 +6,7 @@ function startdb() {
     db.exec(`
         CREATE IF NOT EXISTS TABLE Users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            mail NVARCHAR(255) NOT NULL UNIQUE,
+            email NVARCHAR(255) NOT NULL UNIQUE,
             username VARCHAR(100) NOT NULL,
             password TEXT NOT NULL
         )
