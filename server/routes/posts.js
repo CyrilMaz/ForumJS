@@ -5,9 +5,16 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
-    const posts = db.prepare('SELECT * FROM Posts ORDER BY date DESC').all();
-    res.json(posts);
+  const posts = db.prepare('SELECT * FROM Posts ORDER BY date DESC').all()
+  const result = posts.map(post => ({
+    ...post,
+    likes: 0,
+    dislikes: 0,
+    comments: []
+  }))
+  res.json(result)
 })
+
 
 router.post('/', (req, res) => {
     const { title, content } = req.body
