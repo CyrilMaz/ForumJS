@@ -58,4 +58,6 @@ function startdb() {
     `);
  }
 
+ startdb()
+
  export default db;
