@@ -54,9 +54,14 @@ function startdb() {
             FOREIGN KEY(user_id) REFERENCES Users(id),
             FOREIGN KEY(comment_id) REFERENCES Comments(id)
         );
+        
+        INSERT OR IGNORE INTO Users (id, email, username, password) VALUES (1, 'test@test.com', 'testuser', 'password');
+        INSERT OR IGNORE INTO Categories (id, name) VALUES (1, 'Général');
+
     `);
 }
 
 startdb()
+
 
 export default db;
