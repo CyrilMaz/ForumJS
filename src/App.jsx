@@ -107,6 +107,7 @@ function CreatePostForm({ onCreatePost }) {
 }
 
 export default function App() {
+  const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [newIds, setNewIds] = useState(new Set());
   const [lightMode, setLightMode] = useState(
@@ -160,7 +161,7 @@ export default function App() {
         ))}
       </section>
       <CreatePostForm onCreatePost={handleCreatePost} />
-      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} onLogin={setUser} />}
     </main>
   );
 }
