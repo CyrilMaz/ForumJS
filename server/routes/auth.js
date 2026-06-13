@@ -17,7 +17,8 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'User already exists'});
         }
         
-        const newUser = db.prepare(`INSERT INTO Users VALUES (?, ?, ?)`).run(email, username, password);
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const newUser = db.prepare(`INSERT INTO Users (email, username, password) VALUES (?, ?, ?)`).run(email, username, hashedPassword)
         res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -29,19 +30,19 @@ router.post('/login', async (req, res) => {
 
     try {
         const user = db.prepare(`SELECT * FROM Users WHERE email = ?`).get(email);
-        if (!userExists) {
+        if (!user) {
             return res.status(400).json({ message: 'Invalid credencials' });
         }
 
-        const verifyPassword = bcrypt.compare(password, user[password]);
+        const verifyPassword = await bcrypt.compare(password, user.password);
         if (!verifyPassword) {
             return res.status(400).json({ message: 'Invalid credencials' });
         }
 
-        const token = jwt.sign({ id: user[id] }, process.env.JWT_KEY, { expiresIn: '2h'});
+        const token = jwt.sign({ id: user.id }, process.env.JWT_KEY, { expiresIn: '2h'});
         res.json({ message: 'Login successfully', token });
     } catch (err) {
-        res.status('500').json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
