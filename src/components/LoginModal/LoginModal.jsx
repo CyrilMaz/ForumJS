@@ -16,7 +16,7 @@ export function LoginModal({ onClose, onLogin }) {
         })
         const data = await res.json()
         if (res.ok) {
-            onLogin(data.token)
+            onLogin({token: data.token, username: data.username })
             onClose()
             }
         }
