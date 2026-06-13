@@ -22,7 +22,7 @@ function startdb() {
             category_id INTEGER NOT NULL,
             title VARCHAR(100) NOT NULL,
             content TEXT NOT NULL,
-            date TEXT DEFAULT datetime('now') NOT NULL,
+            date TEXT DEFAULT (datetime('now')) NOT NULL,
             FOREIGN KEY(user_id) REFERENCES Users(id),
             FOREIGN KEY(category_id) REFERENCES Categories(id)
         );
@@ -41,7 +41,7 @@ function startdb() {
             user_id INTEGER NOT NULL,
             post_id INTEGER NOT NULL,
             content TEXT NOT NULL,
-            date TEXT DEFAULT datetime('now') NOT NULL,
+            date TEXT DEFAULT (datetime('now')) NOT NULL,
             FOREIGN KEY(user_id) REFERENCES Users(id),
             FOREIGN KEY(post_id) REFERENCES Posts(id)
         );
@@ -55,8 +55,8 @@ function startdb() {
             FOREIGN KEY(comment_id) REFERENCES Comments(id)
         );
     `);
- }
+}
 
- startdb()
+startdb()
 
- export default db;
+export default db;
