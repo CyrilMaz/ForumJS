@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { LoginModal } from './components/LoginModal/LoginModal';
 import { fetchPosts, createPost, votePost } from './api';
 
-function Header({ lightMode, onTogglelightMode, onOpenLogin }) {
+function Header({ lightMode, onTogglelightMode, onOpenLogin, user }) {
   return (
     <header className="header">
       <div>
@@ -149,6 +149,7 @@ export default function App() {
         lightMode={lightMode}
         onTogglelightMode={() => setLightMode((m) => !m)}
         onOpenLogin={() => setShowLogin(true)}
+        user={user}
       />
       <section className="hero">
         <p className="eyebrow">Projet Ynov</p>
