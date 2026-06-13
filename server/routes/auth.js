@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import express, { Router } from 'express';
-const router = Router();
 import db from '../create_db.js';
 
+const router = Router();
 router.post('/register', async (req, res) => {
     const { email, username, password } = req.body;
 
@@ -12,7 +12,7 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'All fields are required'});
         }
 
-        const userExists = db.prepare(`SELECT * FROM Users WHERE email = ?`).get(`email`);
+        const userExists = db.prepare(`SELECT * FROM Users WHERE email = ?`).get(email);
         if (userExists) {
             return res.status(400).json({ message: 'User already exists'});
         }
@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = db.prepare(`SELECT * FROM Users WHERE email = ?`).get(`email`);
+        const user = db.prepare(`SELECT * FROM Users WHERE email = ?`).get(email);
         if (!userExists) {
             return res.status(400).json({ message: 'Invalid credencials' });
         }
