@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import express, { Router } from 'express';
 const router = Router();
-const db = require('better-sqlite3')('../create_db.db');
+import db from '../create_db.js';
 
 router.post('/register', async (req, res) => {
     const { email, username, password } = req.body;
@@ -45,4 +45,4 @@ router.post('/login', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router
