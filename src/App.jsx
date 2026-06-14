@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { LoginModal } from './components/LoginModal/LoginModal';
 import { fetchPosts, createPost, votePost } from './api';
 
-function Header({ lightMode, onTogglelightMode, onOpenLogin, user }) {
+function Header({ lightMode, onTogglelightMode, onOpenLogin, user, onLogout }) {
   return (
     <header className="header">
       <div>
@@ -19,11 +19,18 @@ function Header({ lightMode, onTogglelightMode, onOpenLogin, user }) {
         >
           {lightMode ? '🌙' : '☀️︎'}
         </button>
-        <button type="button" className="btn-login" onClick={onOpenLogin}>
-          {user ? <span>Connecté en tant que: {user.username}</span> : 
-          <button type="button" className="btn-login" 
-          onClick={onOpenLogin}>se connecter</button>}
-        </button>
+        {user ? (
+          <div className="user-menu">
+          <span>Connecté en tant que: {user.username}</span>
+            <div className="user-dropdown">
+              <button onClick={onLogout}>Se déconnecter</button>
+            </div>
+          </div>
+        ) : (
+      <button type="button" className="btn-login" onClick={onOpenLogin}>se connecter</button>
+    )}
+
+
       </nav>
     </header>
   );
@@ -152,6 +159,7 @@ export default function App() {
         onTogglelightMode={() => setLightMode((m) => !m)}
         onOpenLogin={() => setShowLogin(true)}
         user={user}
+        onLogout={() => setUser(null)}
       />
       <section className="hero">
         <p className="eyebrow">Projet Ynov</p>
