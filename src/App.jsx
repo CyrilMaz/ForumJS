@@ -20,7 +20,9 @@ function Header({ lightMode, onTogglelightMode, onOpenLogin, user }) {
           {lightMode ? '🌙' : '☀️︎'}
         </button>
         <button type="button" className="btn-login" onClick={onOpenLogin}>
-          se connecter
+          {user ? <span>Connecté en tant que: {user.username}</span> : 
+          <button type="button" className="btn-login" 
+          onClick={onOpenLogin}>se connecter</button>}
         </button>
       </nav>
     </header>
