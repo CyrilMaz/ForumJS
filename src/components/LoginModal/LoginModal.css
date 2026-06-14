@@ -45,3 +45,9 @@
     height: 20px;
     
 }
+
+.toggle-mode {
+    color: var(--text);
+    text-decoration: underline;
+    cursor: pointer;
+}
