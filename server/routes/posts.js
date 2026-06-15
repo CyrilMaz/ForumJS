@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../create_db.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -16,13 +17,13 @@ router.get('/', (req, res) => {
 })
 
 
-router.post('/', (req, res) => {
+router.post('/', requireAuth, (req, res) => {
     const { title, content } = req.body
 
     const result = db.prepare(`
         INSERT INTO Posts ( user_id, category_id, title, content)
-        VALUES (1, 1, ?, ?) 
-        `).run(title, content) // PLACEHOLDER : Values ( 1, 1, ?, ?) futurement (?, ?, ?, ?) avec l'auth fonctionnelle
+        VALUES (?, 1, ?, ?) 
+        `).run(req.user.id, title, content) // PLACEHOLDER : Values ( 1, 1, ?, ?) futurement (?, ?, ?, ?) avec l'auth fonctionnelle
 
         res.json({ id: result.lastInsertRowid, title, content, likes: 0, dislikes: 0, comments: [] })
 })
