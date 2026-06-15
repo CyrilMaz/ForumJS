@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
         
         const hashedPassword = await bcrypt.hash(password, 10)
         const newUser = db.prepare(`INSERT INTO Users (email, username, password) VALUES (?, ?, ?)`).run(email, username, hashedPassword)
-        const token = jwt.sign({ id: newUser.lastInsertRowid }, process.env.JWT_KEY, { expiresIn: '2h' })
+        const token = jwt.sign({ id: newUser.lastInsertRowid, username: username }, process.env.JWT_KEY, { expiresIn: '2h' })
         res.status(201).json({ message: 'User registered successfully', token, username })
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
