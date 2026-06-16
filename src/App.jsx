@@ -124,7 +124,11 @@ function CreatePostForm({ onCreatePost }) {
 
 export default function App() {
   const [toasts, setToasts] = useState([]);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
   const [posts, setPosts] = useState([]);
   const [newIds, setNewIds] = useState(new Set());
   const [lightMode, setLightMode] = useState(
@@ -156,6 +160,11 @@ export default function App() {
     }
   }
 
+  function handleLogin(userData) {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  }
+
   async function handleComment(postId, content) {
     try {
       const comment = await createComment(postId, content, user.token)
@@ -185,12 +194,12 @@ export default function App() {
         onTogglelightMode={() => setLightMode((m) => !m)}
         onOpenLogin={() => setShowLogin(true)}
         user={user}
-        onLogout={() => setUser(null)}
+        onLogout={() => { setUser(null); localStorage.removeItem('user'); }}
       />
       <section className="hero">
         <p className="eyebrow">Projet Ynov</p>
-        <h2>Forum de puants en développement</h2>
-        <p>Affichage, votes et création de posts — 100 % local.</p>
+        <h2>Forum sans sujet précis</h2>
+        <p>lucas mets nous 20 stp</p>
       </section>
       <section id="posts" className="posts-list">
         {posts.map((post) => (
@@ -205,7 +214,7 @@ export default function App() {
         ))}
       </section>
       {user && <CreatePostForm onCreatePost={handleCreatePost} />}
-      {showLogin && <LoginModal onClose={() => setShowLogin(false)} onLogin={setUser} onError={addToast} />}
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} onLogin={handleLogin} onError={addToast} />}
         <Toast toasts={toasts} />
     </main>
   );
