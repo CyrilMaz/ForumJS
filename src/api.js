@@ -1,8 +1,13 @@
 // Point de connexion à l'API — remplacer les implémentations par des fetch() quand le backend est prêt.
 const API_URL = "/api"
 
-export async function fetchPosts() {
-  return apiFetch('/posts');
+export async function fetchPosts(category_id = null, user_id = null, liked_by = null) {
+  const params = new URLSearchParams();
+  if (category_id) params.append('category_id', category_id);
+  if (user_id) params.append('user_id', user_id);
+  if (liked_by) params.append('liked_by', liked_by);
+  const query = params.toString() ? `?${params.toString()}` : '';
+  return apiFetch(`/posts${query}`);
 }
 
 
@@ -30,4 +35,12 @@ export async function apiFetch(path, options ={}, token) {
   const data = await ress.json();
   if (!ress.ok) throw new Error(data.message || 'Erreur serveur');
   return data
+}
+
+export async function deletePost(postId, token) {
+  return apiFetch(`/posts/${postId}`, { method: 'DELETE' }, token);
+}
+
+export async function deleteComment(postId, commentId, token) {
+  return apiFetch(`/posts/${postId}/comments/${commentId}`, { method: 'DELETE' }, token);
 }

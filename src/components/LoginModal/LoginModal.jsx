@@ -17,7 +17,7 @@ export function LoginModal({ onClose, onLogin, onError}) {
         })
         const data = await res.json()
         if (res.ok) {
-            onLogin({token: data.token, username: data.username })
+            onLogin({token: data.token, username: data.username, id: data.id })
             onClose()
             } else { 
                 onError(data.message)

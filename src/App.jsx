@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { LoginModal } from './components/LoginModal/LoginModal';
-import { fetchPosts, createPost, votePost, fetchCategories } from './api';
+import { fetchPosts, createPost, votePost, fetchCategories, deletePost, deleteComment } from './api';
 import { createComment } from './api';
+
 
 function Toast({ toasts }) {
   return (
@@ -46,9 +47,10 @@ function Header({ lightMode, onTogglelightMode, onOpenLogin, user, onLogout }) {
   );
 }
 
-function PostCard({ post, onVote, onComment, user, isNew }) {
+function PostCard({ post, onVote, onComment, onDelete, onDeleteComment, user, isNew }) {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   async function handleComment(e) {
     e.preventDefault();
@@ -71,6 +73,17 @@ function PostCard({ post, onVote, onComment, user, isNew }) {
         <button onClick={() => setShowComments(s => !s)}>
           {post.comments.length} commentaire(s)
         </button>
+        {user?.id === post.user_id && (
+          showDeleteConfirm ? (
+            <span>
+              Confirmer ?
+              <button onClick={() => onDelete(post.id)}>Oui</button>
+              <button onClick={() => setShowDeleteConfirm(false)}>Non</button>
+            </span>
+          ) : (
+            <button onClick={() => setShowDeleteConfirm(true)}>🗑 Supprimer</button>
+          )
+        )}
       </div>
       {showComments && (
         <div className="comments">
@@ -81,7 +94,12 @@ function PostCard({ post, onVote, onComment, user, isNew }) {
             </form>
           )}
           {post.comments.map(c => (
-            <p key={c.id}><strong>{c.author}</strong> — {c.content}</p>
+            <p key={c.id}>
+              <strong>{c.author}</strong> — {c.content}
+              {user?.id === c.user_id && (
+                <button className="btn-delete" onClick={() => onDeleteComment(post.id, c.id)}>✕</button>
+              )}
+            </p>
           ))}
         </div>
       )}
@@ -154,6 +172,9 @@ export default function App() {
     () => window.matchMedia('(prefers-color-scheme: light)').matches
   );
   const [showLogin, setShowLogin] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [activeUserId, setActiveUserId] = useState(null);
+  const [activeLiked, setActiveLiked] = useState(null);
 
   function addToast(message, type = 'error') {
     const id = Date.now();
@@ -162,8 +183,8 @@ export default function App() {
   }
 
   useEffect(() => {
-    fetchPosts().then(setPosts);
-  }, []);
+    fetchPosts(activeCategory, activeUserId, activeLiked).then(setPosts);
+  }, [activeCategory, activeUserId, activeLiked]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', lightMode ? 'light' : 'dark');
@@ -176,6 +197,27 @@ export default function App() {
       setPosts(cur => cur.map(p => p.id === postId ? { ...p, ...counts } : p));
     } catch (err) {
       addToast(err.message)
+    }
+  }
+
+  async function handleDeletePost(postId) {
+    try {
+      await deletePost(postId, user.token);
+      setPosts(cur => cur.filter(p => p.id !== postId));
+    } catch (err) {
+      addToast(err.message);
+    }
+  }
+
+  async function handleDeleteComment(postId, commentId) {
+    try {
+      await deleteComment(postId, commentId, user.token);
+      setPosts(cur => cur.map(p => p.id === postId 
+        ? { ...p, comments: p.comments.filter(c => c.id !== commentId) }
+        : p
+      ));
+    } catch (err) {
+      addToast(err.message);
     }
   }
 
@@ -230,6 +272,30 @@ export default function App() {
         <h2>Forum sans sujet précis</h2>
         <p>lucas met nous 20 stp</p>
       </section>
+      <div className="filters">
+        <button className={!activeCategory ? 'active' : ''} onClick={() => setActiveCategory(null)}>Tous</button>
+        {categories.map(c => (
+          <button key={c.id} className={activeCategory === c.id ? 'active' : ''} onClick={() => setActiveCategory(c.id)}>
+            {c.name}
+          </button>
+        ))}
+        {user && (
+          <button
+            className={activeUserId === user.id ? 'active' : ''}
+            onClick={() => setActiveUserId(activeUserId === user.id ? null : user.id)}
+          >
+            Mes posts
+          </button>
+        )}
+        {user && (
+          <button
+            className={activeLiked === user.id ? 'active' : ''}
+            onClick={() => setActiveLiked(activeLiked === user.id ? null : user.id)}
+          >
+            Mes likes
+          </button>
+        )}
+      </div>
       <section id="posts" className="posts-list">
         {posts.map((post) => (
           <PostCard 
@@ -238,7 +304,9 @@ export default function App() {
             onVote={handleVote} 
             onComment={handleComment}
             user={user}
-            isNew={newIds.has(post.id)} 
+            isNew={newIds.has(post.id)}
+            onDelete={handleDeletePost}
+            onDeleteComment={handleDeleteComment}
           />
         ))}
       </section>
