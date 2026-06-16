@@ -2,6 +2,15 @@ import { useEffect, useState } from 'react';
 import { LoginModal } from './components/LoginModal/LoginModal';
 import { fetchPosts, createPost, votePost } from './api';
 
+function Toast({ toasts }) {
+  return (
+    <div className="toast-container">
+      {toasts.map(t => (
+        <div key={t.id} className={`toast toast--${t.type}`}>{t.message}</div>
+      ))}
+    </div>
+  );
+}
 function Header({ lightMode, onTogglelightMode, onOpenLogin, user, onLogout }) {
   return (
     <header className="header">
@@ -37,13 +46,6 @@ function Header({ lightMode, onTogglelightMode, onOpenLogin, user, onLogout }) {
 }
 
 function PostCard({ post, onVote, isNew }) {
-  const [bumped, setBumped] = useState(null);
-
-  function handleVote(field) {
-    setBumped(field);
-    onVote(post.id, field);
-    setTimeout(() => setBumped(null), 300);
-  }
 
   return (
     <article className={`post-card${isNew ? ' post-card--new' : ''}`}>
@@ -56,15 +58,13 @@ function PostCard({ post, onVote, isNew }) {
       <div className="post-actions">
         <button
           type="button"
-          className={bumped === 'likes' ? 'bumped' : ''}
-          onClick={() => handleVote('likes')}
+          onClick={() => onVote(post.id, 1)}
         >
           👍 {post.likes}
         </button>
         <button
           type="button"
-          className={bumped === 'dislikes' ? 'bumped' : ''}
-          onClick={() => handleVote('dislikes')}
+          onClick={() => onVote(post.id, 0)}
         >
           👎 {post.dislikes}
         </button>
@@ -116,6 +116,7 @@ function CreatePostForm({ onCreatePost }) {
 }
 
 export default function App() {
+  const [toasts, setToasts] = useState([]);
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [newIds, setNewIds] = useState(new Set());
@@ -123,6 +124,12 @@ export default function App() {
     () => window.matchMedia('(prefers-color-scheme: light)').matches
   );
   const [showLogin, setShowLogin] = useState(false);
+
+  function addToast(message, type = 'error') {
+    const id = Date.now();
+    setToasts(cur => [...cur, { id, message, type }]);
+    setTimeout(() => setToasts(cur => cur.filter(t => t.id !== id)), 4000)
+  }
 
   useEffect(() => {
     fetchPosts().then(setPosts);
@@ -132,15 +139,18 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', lightMode ? 'light' : 'dark');
   }, [lightMode]);
 
-  async function handleVote(postId, field) {
-    setPosts((cur) =>
-      cur.map((p) => (p.id === postId ? { ...p, [field]: p[field] + 1 } : p))
-    );
-    await votePost(postId, field);
+  async function handleVote(postId, value) {
+    if (!user) return addToast('Connectez-vous pour voter')
+    try {
+      const counts = await votePost(postId, value, user.token);
+      setPosts(cur => cur.map(p => p.id === postId ? { ...p, ...counts } : p));
+    } catch (err) {
+      addToast(err.message)
+    }
   }
 
   async function handleCreatePost(form) {
-    const newPost = await createPost(form);
+    const newPost = await createPost(form, user.token);
     setPosts((cur) => [newPost, ...cur]);
     setNewIds((cur) => new Set(cur).add(newPost.id));
     setTimeout(() => {
@@ -171,8 +181,9 @@ export default function App() {
           <PostCard key={post.id} post={post} onVote={handleVote} isNew={newIds.has(post.id)} />
         ))}
       </section>
-      <CreatePostForm onCreatePost={handleCreatePost} />
+      {user && <CreatePostForm onCreatePost={handleCreatePost} />}
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} onLogin={setUser} />}
+        <Toast toasts={toasts} />
     </main>
   );
 }
