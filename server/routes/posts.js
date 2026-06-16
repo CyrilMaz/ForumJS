@@ -6,13 +6,34 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
-  const posts = db.prepare('SELECT * FROM Posts ORDER BY date DESC').all()
-  const result = posts.map(post => ({
-    ...post,
-    likes: 0,
-    dislikes: 0,
-    comments: []
-  }))
+  const posts = db.prepare(`
+    SELECT Posts.*, Users.username as author, Categories.name as category
+    FROM Posts
+    LEFT JOIN Users ON Posts.user_id = Users.id
+    LEFT JOIN Categories ON Posts.category_id = Categories.id
+    ORDER BY Posts.date DESC
+    `).all()
+    
+  const getComments = db.prepare(`
+  SELECT Comments.*, Users.username as author
+  FROM Comments
+  JOIN Users ON Comments.user_id = Users.id
+  WHERE Comments.post_id = ?
+  ORDER BY Comments.date ASC
+`);
+
+const getCounts = db.prepare(`
+  SELECT
+    COALESCE(SUM(CASE WHEN value = 1 THEN 1 ELSE 0 END), 0) as likes,
+    COALESCE(SUM(CASE WHEN value = 0 THEN 1 ELSE 0 END), 0) as dislikes
+  FROM Post_likes WHERE post_id = ?
+`);
+
+const result = posts.map(post => ({
+  ...post,
+  ...getCounts.get(post.id),
+  comments: getComments.all(post.id)
+}))
   res.json(result)
 })
 
@@ -78,7 +99,7 @@ router.post('/:id/comments', requireAuth, (req, res) => {
         VALUES ( ?, ?, ?)
         `).run(postId, req.user.id, content);
 
-    res.json({ id: result.lastInsertRowid, post_id: postId, user_id: req.user.id, username: req.user.username, content });
+    res.json({ id: result.lastInsertRowid, post_id: postId, user_id: req.user.id, author: req.user.username, content });
 });
 
 
