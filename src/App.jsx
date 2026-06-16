@@ -91,17 +91,22 @@ function PostCard({ post, onVote, onComment, user, isNew }) {
 
 
 function CreatePostForm({ onCreatePost, categories }) {
-  const [form, setForm] = useState({ title: '', content: '', category_id: '' });
+  const [form, setForm] = useState({ title: '', content: '', category_ids: [] });
 
   function updateField(e) {
     setForm((cur) => ({ ...cur, [e.target.name]: e.target.value }));
   }
 
+  function handleCategoryChange(e) {
+  const selected = Array.from(e.target.selectedOptions, opt => Number(opt.value));
+  setForm(cur => ({ ...cur, category_ids: selected }));
+}
+
   function handleSubmit(e) {
     e.preventDefault();
-    if (!form.title.trim() || !form.content.trim() || !form.category_id) return;
+    if (!form.title.trim() || !form.content.trim() || !form.category_ids.length) return;
     onCreatePost(form);
-    setForm({ title: '', content: '', category_id: '' });
+    setForm({ title: '', content: '', category_ids: [] });
   }
 
   return (
@@ -114,8 +119,7 @@ function CreatePostForm({ onCreatePost, categories }) {
         </label>
         <label>
           Catégorie
-          <select name="category_id" value={form.category_id} onChange={updateField}>
-            <option value="">-- Choisir --</option>
+          <select name="category_ids" value={form.category_ids} onChange={handleCategoryChange} multiple>
             {categories.map(c => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -173,6 +177,16 @@ export default function App() {
     } catch (err) {
       addToast(err.message)
     }
+  }
+
+  function handleCategory(e) {
+    const id = Number(e.target.value);
+    setForm(cur => ({ 
+      ...cur,
+      category_ids: e.target.checked
+        ? [...cur.category_ids, id]
+        : cur.category_ids.filter(c => c !== id)
+    }))
   }
 
   function handleLogin(userData) {
