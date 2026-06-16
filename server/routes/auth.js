@@ -2,9 +2,10 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import express, { Router } from 'express';
 import db from '../create_db.js';
+import { authLimiter } from '../middleware/rateLimit.js';
 
 const router = Router();
-router.post('/register', async (req, res) => {
+router.post('/register', authLimiter, async (req, res) => {
     const { email, username, password } = req.body;
 
     try {
@@ -26,7 +27,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     const { email, password } = req.body;
 
     try {

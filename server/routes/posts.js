@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + '-' + file.originalname);
   }
 });
-const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } }); // 5 Mo
+const upload = multer({ storage: storage, limits: { fileSize: 20 * 1024 * 1024 } }); // 20 Mo
 
 const router = express.Router();
 
