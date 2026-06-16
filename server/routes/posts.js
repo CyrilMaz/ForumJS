@@ -7,10 +7,13 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
   const posts = db.prepare(`
-    SELECT Posts.*, Users.username as author, Categories.name as category
+    SELECT Posts.*, Users.username as author,
+    GROUP_CONCAT(Categories.name, ', ') as category
     FROM Posts
     LEFT JOIN Users ON Posts.user_id = Users.id
-    LEFT JOIN Categories ON Posts.category_id = Categories.id
+    LEFT JOIN Post_Categories ON Posts.id = Post_Categories.post_id
+    LEFT JOIN Categories ON Post_Categories.category_id = Categories.id
+    GROUP BY Posts.id
     ORDER BY Posts.date DESC
     `).all()
     
@@ -24,8 +27,8 @@ router.get('/', (req, res) => {
 
 const getCounts = db.prepare(`
   SELECT
-    COALESCE(SUM(CASE WHEN value = 1 THEN 1 ELSE 0 END), 0) as likes,
-    COALESCE(SUM(CASE WHEN value = 0 THEN 1 ELSE 0 END), 0) as dislikes
+  COALESCE(SUM(CASE WHEN value = 1 THEN 1 ELSE 0 END), 0) as likes,
+  COALESCE(SUM(CASE WHEN value = 0 THEN 1 ELSE 0 END), 0) as dislikes
   FROM Post_likes WHERE post_id = ?
 `);
 
@@ -39,15 +42,29 @@ const result = posts.map(post => ({
 
 
 router.post('/', requireAuth, (req, res) => {
-    const { title, content } = req.body
+    const { title, content, category_ids } = req.body; // tableau ex: [1, 3]
+
+    if (!title?.trim() || !content?.trim() || !category_ids?.length) {
+        return res.status(400).json({ message: 'Champs manquants' });
+    }
 
     const result = db.prepare(`
-        INSERT INTO Posts ( user_id, category_id, title, content)
-        VALUES (?, 1, ?, ?) 
-        `).run(req.user.id, title, content) // PLACEHOLDER : Values ( 1, 1, ?, ?) futurement (?, ?, ?, ?) avec l'auth fonctionnelle
+        INSERT INTO Posts (user_id, category_id, title, content)
+        VALUES (?, ?, ?, ?)
+    `).run(req.user.id, category_ids[0], title, content);
 
-        res.json({ id: result.lastInsertRowid, title, content, likes: 0, dislikes: 0, comments: [] })
-})
+    const postId = result.lastInsertRowid;
+
+    // Insérer toutes les catégories dans Post_Categories
+    const insertCat = db.prepare(
+        'INSERT INTO Post_Categories (post_id, category_id) VALUES (?, ?)'
+    );
+    for (const catId of category_ids) {
+        insertCat.run(postId, catId);
+    }
+
+    res.status(201).json({ id: postId, title, content, likes: 0, dislikes: 0, comments: [], categories: [] });
+});
 
 router.patch('/:id/vote', requireAuth, (req, res) => {
     const postId = Number(req.params.id);

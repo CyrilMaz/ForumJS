@@ -54,9 +54,17 @@ function startdb() {
             FOREIGN KEY(user_id) REFERENCES Users(id),
             FOREIGN KEY(comment_id) REFERENCES Comments(id)
         );
+
+        CREATE TABLE IF NOT EXISTS Post_Categories (
+            post_id INTEGER NOT NULL,
+            category_id INTEGER NOT NULL,
+            PRIMARY KEY(post_id, category_id),
+            FOREIGN KEY(post_id) REFERENCES Posts(id),
+            FOREIGN KEY(category_id) REFERENCES Categories(id)
+        );
         
         INSERT OR IGNORE INTO Users (id, email, username, password) VALUES (1, 'test@test.com', 'testuser', 'password');
-        
+
         INSERT OR IGNORE INTO Categories (id, name) VALUES (1, 'Général');
         INSERT OR IGNORE INTO Categories (id, name) VALUES (2, 'Technologie');
         INSERT OR IGNORE INTO Categories (id, name) VALUES (3, 'Questions');
