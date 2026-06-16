@@ -18,7 +18,7 @@ function Header({ lightMode, onTogglelightMode, onOpenLogin, user, onLogout }) {
     <header className="header">
       <div>
         <p className="eyebrow">Forum web</p>
-        <h1>ForumJS</h1>
+        <h1>Let's TALK</h1>
       </div>
       <nav className="nav">
         <a href="#posts">Posts</a>
