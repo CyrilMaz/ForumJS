@@ -205,7 +205,7 @@ export default function App() {
         ))}
       </section>
       {user && <CreatePostForm onCreatePost={handleCreatePost} />}
-      {showLogin && <LoginModal onClose={() => setShowLogin(false)} onLogin={setUser} />}
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} onLogin={setUser} onError={addToast} />}
         <Toast toasts={toasts} />
     </main>
   );

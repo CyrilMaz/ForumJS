@@ -3,7 +3,7 @@ import './LoginModal.css';
 import googleLogo from './google.png';
 import githubLogo from './github.png';
 
-export function LoginModal({ onClose, onLogin }) {
+export function LoginModal({ onClose, onLogin, onError}) {
   
     const [form, setForm] = useState({ email: '', password: '', username: '' }); 
     const [mode, setMode] = useState('login');
@@ -19,7 +19,9 @@ export function LoginModal({ onClose, onLogin }) {
         if (res.ok) {
             onLogin({token: data.token, username: data.username })
             onClose()
-            }
+            } else { 
+                onError(data.message)
+            } 
         }
     return (
         <div className="modal-overlay" onClick={onClose}>

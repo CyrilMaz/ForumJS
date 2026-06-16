@@ -336,3 +336,30 @@ form button {
 .user-menu:hover .user-dropdown {
   display: block;
 }
+
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.toast {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  max-width: 360px;
+}
+
+.toast--error {
+  background: #ef4444;
+  color: white;
+}
+
+.toast--success {
+  background: #22c55e;
+  color: white;
+}
