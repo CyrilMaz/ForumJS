@@ -11,8 +11,13 @@ export async function fetchPosts(category_id = null, user_id = null, liked_by = 
 }
 
 
-export async function createPost(form, token) {
-  return apiFetch('/posts', { method: 'POST', body: JSON.stringify(form) }, token);
+export async function createPost(formData, token) {
+  const headers = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch('/api/posts', { method: 'POST', headers, body: formData });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Erreur serveur');
+  return data;
 }
 
 

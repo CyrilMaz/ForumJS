@@ -238,6 +238,23 @@ textarea {
   resize: vertical;
 }
 
+input[type="file"] {
+  font-weight: 400;
+}
+
+input[type="file"]::file-selector-button,
+input[type="file"]::-webkit-file-upload-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-right: 10px;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 form button {
   justify-self: start;
   background: var(--blue);

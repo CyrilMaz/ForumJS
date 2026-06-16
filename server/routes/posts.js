@@ -1,6 +1,18 @@
 import express from 'express';
 import db from '../create_db.js';
 import { requireAuth } from '../middleware/auth.js';
+import multer from 'multer';
+import path from 'path';
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'data/uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } }); // 5 Mo
 
 const router = express.Router();
 
@@ -53,17 +65,20 @@ const result = posts.map(post => ({
 })
 
 
-router.post('/', requireAuth, (req, res) => {
-    const { title, content, category_ids } = req.body; // tableau ex: [1, 3]
+router.post('/', requireAuth, upload.single('image'), (req, res) => {
+    const { title, content } = req.body;
+    const category_ids = Array.isArray(req.body.category_ids)
+      ? req.body.category_ids.map(Number)
+      : [Number(req.body.category_ids)];
 
     if (!title?.trim() || !content?.trim() || !category_ids?.length) {
         return res.status(400).json({ message: 'Champs manquants' });
     }
 
     const result = db.prepare(`
-        INSERT INTO Posts (user_id, category_id, title, content)
-        VALUES (?, ?, ?, ?)
-    `).run(req.user.id, category_ids[0], title, content);
+        INSERT INTO Posts (user_id, category_id, title, content, image)
+        VALUES (?, ?, ?, ?, ?)
+    `).run(req.user.id, category_ids[0], title, content, req.file ? '/uploads/' + req.file.filename : null);
 
     const postId = result.lastInsertRowid;
 
@@ -75,7 +90,7 @@ router.post('/', requireAuth, (req, res) => {
         insertCat.run(postId, catId);
     }
 
-    res.status(201).json({ id: postId, title, content, user_id: req.user.id, likes: 0, dislikes: 0, comments: [], categories: [] });
+    res.status(201).json({ id: postId, title, content, image: req.file ? '/uploads/' + req.file.filename : null, user_id: req.user.id, likes: 0, dislikes: 0, comments: [], categories: [] });
 });
 
 router.patch('/:id/vote', requireAuth, (req, res) => {

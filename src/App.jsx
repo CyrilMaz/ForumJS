@@ -67,6 +67,7 @@ function PostCard({ post, onVote, onComment, onDelete, onDeleteComment, user, is
       </div>
       <h2>{post.title}</h2>
       <p>{post.content}</p>
+      {post.image && <img src={post.image} alt={post.title} className="post-image" />}
       <div className="post-actions">
         <button onClick={() => onVote(post.id, 1)}>👍 {post.likes}</button>
         <button onClick={() => onVote(post.id, 0)}>👎 {post.dislikes}</button>
@@ -110,6 +111,7 @@ function PostCard({ post, onVote, onComment, onDelete, onDeleteComment, user, is
 
 function CreatePostForm({ onCreatePost, categories }) {
   const [form, setForm] = useState({ title: '', content: '', category_ids: [] });
+  const [image, setImage] = useState(null);
 
   function updateField(e) {
     setForm((cur) => ({ ...cur, [e.target.name]: e.target.value }));
@@ -123,8 +125,14 @@ function CreatePostForm({ onCreatePost, categories }) {
   function handleSubmit(e) {
     e.preventDefault();
     if (!form.title.trim() || !form.content.trim() || !form.category_ids.length) return;
-    onCreatePost(form);
+    const formData = new FormData();
+    formData.append('title', form.title);
+    formData.append('content', form.content);
+    form.category_ids.forEach(id => formData.append('category_ids', id));
+    if (image) formData.append('image', image);
+    onCreatePost(formData);
     setForm({ title: '', content: '', category_ids: [] });
+    setImage(null);
   }
 
   return (
@@ -142,6 +150,10 @@ function CreatePostForm({ onCreatePost, categories }) {
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
+        </label>
+        <label class="btn-file">
+          Image (optionnel)
+          <input type="file" accept="image/jpeg,image/png,image/gif" onChange={e => setImage(e.target.files[0])} />
         </label>
         <label>
           Message
@@ -196,7 +208,7 @@ export default function App() {
       const counts = await votePost(postId, value, user.token);
       setPosts(cur => cur.map(p => p.id === postId ? { ...p, ...counts } : p));
     } catch (err) {
-      addToast(err.message)
+      addToast(err.message);
     }
   }
 
@@ -241,21 +253,25 @@ export default function App() {
       const comment = await createComment(postId, content, user.token)
       setPosts(cur => cur.map(p => p.id === postId ? { ...p, comments: [...p.comments, comment] } : p))
     } catch (err) {
-      addToast(err.message)
+      addToast(err.message);
     }
   }
 
   async function handleCreatePost(form) {
-    const newPost = await createPost(form, user.token);
-    setPosts((cur) => [newPost, ...cur]);
-    setNewIds((cur) => new Set(cur).add(newPost.id));
-    setTimeout(() => {
-      setNewIds((cur) => {
-        const next = new Set(cur);
-        next.delete(newPost.id);
-        return next;
-      });
-    }, 600);
+    try {
+      const newPost = await createPost(form, user.token);
+      setPosts((cur) => [newPost, ...cur]);
+      setNewIds((cur) => new Set(cur).add(newPost.id));
+      setTimeout(() => {
+        setNewIds((cur) => {
+          const next = new Set(cur);
+          next.delete(newPost.id);
+          return next;
+        });
+      }, 600);
+    } catch (err) {
+      addToast(err.message);
+    }
   }
 
   return (

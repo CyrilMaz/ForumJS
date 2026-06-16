@@ -22,6 +22,7 @@ function startdb() {
             category_id INTEGER NOT NULL,
             title VARCHAR(100) NOT NULL,
             content TEXT NOT NULL,
+            image TEXT,
             date TEXT DEFAULT (datetime('now')) NOT NULL,
             FOREIGN KEY(user_id) REFERENCES Users(id),
             FOREIGN KEY(category_id) REFERENCES Categories(id)
