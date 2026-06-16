@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { LoginModal } from './components/LoginModal/LoginModal';
 import { fetchPosts, createPost, votePost } from './api';
+import { createComment } from './api';
 
 function Toast({ toasts }) {
   return (
@@ -45,7 +46,16 @@ function Header({ lightMode, onTogglelightMode, onOpenLogin, user, onLogout }) {
   );
 }
 
-function PostCard({ post, onVote, isNew }) {
+function PostCard({ post, onVote, onComment, user, isNew }) {
+  const [showComments, setShowComments] = useState(false);
+  const [commentText, setCommentText] = useState('');
+
+  async function handleComment(e) {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+    await onComment(post.id, commentText);
+    setCommentText('');
+  }
 
   return (
     <article className={`post-card${isNew ? ' post-card--new' : ''}`}>
@@ -56,32 +66,29 @@ function PostCard({ post, onVote, isNew }) {
       <h2>{post.title}</h2>
       <p>{post.content}</p>
       <div className="post-actions">
-        <button
-          type="button"
-          onClick={() => onVote(post.id, 1)}
-        >
-          👍 {post.likes}
+        <button onClick={() => onVote(post.id, 1)}>👍 {post.likes}</button>
+        <button onClick={() => onVote(post.id, 0)}>👎 {post.dislikes}</button>
+        <button onClick={() => setShowComments(s => !s)}>
+          {post.comments.length} commentaire(s)
         </button>
-        <button
-          type="button"
-          onClick={() => onVote(post.id, 0)}
-        >
-          👎 {post.dislikes}
-        </button>
-        <span>{post.comments.length} commentaire(s)</span>
       </div>
-      {post.comments.length > 0 && (
+      {showComments && (
         <div className="comments">
-          {post.comments.map((comment) => (
-            <p key={comment.id}>
-              <strong>{comment.author}</strong> — {comment.content}
-            </p>
+          {user && (
+            <form onSubmit={handleComment}>
+              <input value={commentText} onChange={e => setCommentText(e.target.value)} placeholder="Votre commentaire..." />
+              <button type="submit">Envoyer</button>
+            </form>
+          )}
+          {post.comments.map(c => (
+            <p key={c.id}><strong>{c.author}</strong> — {c.content}</p>
           ))}
         </div>
       )}
     </article>
   );
 }
+
 
 function CreatePostForm({ onCreatePost }) {
   const [form, setForm] = useState({ title: '', content: '' });
@@ -149,6 +156,15 @@ export default function App() {
     }
   }
 
+  async function handleComment(postId, content) {
+    try {
+      const comment = await createComment(postId, content, user.token)
+      setPosts(cur => cur.map(p => p.id === postId ? { ...p, comments: [...p.comments, comment] } : p))
+    } catch (err) {
+      addToast(err.message)
+    }
+  }
+
   async function handleCreatePost(form) {
     const newPost = await createPost(form, user.token);
     setPosts((cur) => [newPost, ...cur]);
@@ -178,7 +194,14 @@ export default function App() {
       </section>
       <section id="posts" className="posts-list">
         {posts.map((post) => (
-          <PostCard key={post.id} post={post} onVote={handleVote} isNew={newIds.has(post.id)} />
+          <PostCard 
+            key={post.id} 
+            post={post} 
+            onVote={handleVote} 
+            onComment={handleComment}
+            user={user}
+            isNew={newIds.has(post.id)} 
+          />
         ))}
       </section>
       {user && <CreatePostForm onCreatePost={handleCreatePost} />}
