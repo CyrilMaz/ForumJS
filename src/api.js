@@ -19,6 +19,10 @@ export async function createComment(postId, content, token) {
   return apiFetch(`/posts/${postId}/comments`, { method: 'POST', body: JSON.stringify({ content }) }, token);
 }
 
+export async function fetchCategories() {
+  return apiFetch('/categories');
+}
+
 export async function apiFetch(path, options ={}, token) {
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;

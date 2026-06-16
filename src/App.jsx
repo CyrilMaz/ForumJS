@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LoginModal } from './components/LoginModal/LoginModal';
-import { fetchPosts, createPost, votePost } from './api';
+import { fetchPosts, createPost, votePost, fetchCategories } from './api';
 import { createComment } from './api';
 
 function Toast({ toasts }) {
@@ -90,8 +90,8 @@ function PostCard({ post, onVote, onComment, user, isNew }) {
 }
 
 
-function CreatePostForm({ onCreatePost }) {
-  const [form, setForm] = useState({ title: '', content: '' });
+function CreatePostForm({ onCreatePost, categories }) {
+  const [form, setForm] = useState({ title: '', content: '', category_id: '' });
 
   function updateField(e) {
     setForm((cur) => ({ ...cur, [e.target.name]: e.target.value }));
@@ -99,9 +99,9 @@ function CreatePostForm({ onCreatePost }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!form.title.trim() || !form.content.trim()) return;
+    if (!form.title.trim() || !form.content.trim() || !form.category_id) return;
     onCreatePost(form);
-    setForm({ title: '', content: '' });
+    setForm({ title: '', content: '', category_id: '' });
   }
 
   return (
@@ -111,6 +111,15 @@ function CreatePostForm({ onCreatePost }) {
         <label>
           Titre
           <input name="title" value={form.title} onChange={updateField} placeholder="Sujet du post" />
+        </label>
+        <label>
+          Catégorie
+          <select name="category_id" value={form.category_id} onChange={updateField}>
+            <option value="">-- Choisir --</option>
+            {categories.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
         </label>
         <label>
           Message
@@ -123,6 +132,12 @@ function CreatePostForm({ onCreatePost }) {
 }
 
 export default function App() {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetchCategories().then(setCategories);
+  }, []);
+
   const [toasts, setToasts] = useState([]);
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('user');
@@ -199,7 +214,7 @@ export default function App() {
       <section className="hero">
         <p className="eyebrow">Projet Ynov</p>
         <h2>Forum sans sujet précis</h2>
-        <p>lucas mets nous 20 stp</p>
+        <p>lucas met nous 20 stp</p>
       </section>
       <section id="posts" className="posts-list">
         {posts.map((post) => (
@@ -213,7 +228,7 @@ export default function App() {
           />
         ))}
       </section>
-      {user && <CreatePostForm onCreatePost={handleCreatePost} />}
+      {user && <CreatePostForm onCreatePost={handleCreatePost} categories={categories} />}
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} onLogin={handleLogin} onError={addToast} />}
         <Toast toasts={toasts} />
     </main>

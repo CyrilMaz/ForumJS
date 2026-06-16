@@ -56,7 +56,11 @@ function startdb() {
         );
         
         INSERT OR IGNORE INTO Users (id, email, username, password) VALUES (1, 'test@test.com', 'testuser', 'password');
+        
         INSERT OR IGNORE INTO Categories (id, name) VALUES (1, 'Général');
+        INSERT OR IGNORE INTO Categories (id, name) VALUES (2, 'Technologie');
+        INSERT OR IGNORE INTO Categories (id, name) VALUES (3, 'Questions');
+        INSERT OR IGNORE INTO Categories (id, name) VALUES (4, 'Blabla');
 
     `);
 }
